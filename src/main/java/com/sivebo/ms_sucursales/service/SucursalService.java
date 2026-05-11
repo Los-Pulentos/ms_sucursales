@@ -73,7 +73,8 @@ public class SucursalService {
                 });
         }
 
-        public void delete(Long id) {
+        public Boolean delete(Long id) {
                 sucursalRepository.deleteById(id);
+                return !sucursalRepository.existsById(id);
         }
 }
