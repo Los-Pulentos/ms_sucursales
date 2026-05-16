@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.sivebo.ms_sucursales.dto.SucursalRequestDTO;
 import com.sivebo.ms_sucursales.dto.SucursalResponseDTO;
@@ -23,6 +25,9 @@ public class SucursalService {
         private final SucursalRepository sucursalRepository;
         
         private final WebClientUtil webClientUtil;
+
+        @Qualifier("comunasWebClient")
+        private final WebClient comunasWebClient;
 
         private SucursalResponseDTO mapToDTO(Sucursal sucursal) {
                 return new SucursalResponseDTO(
@@ -56,7 +61,7 @@ public class SucursalService {
         }
 
         public SucursalResponseDTO create(SucursalRequestDTO dto) {
-		webClientUtil.validateMicroService(dto.getIdComuna(), "comuna");
+		webClientUtil.validateMicroService(dto.getIdComuna(), "comunas", comunasWebClient);
                 return mapToDTO(sucursalRepository.save(
                         new Sucursal(
                                 null,
@@ -70,7 +75,7 @@ public class SucursalService {
 
         public Optional<SucursalResponseDTO> update(Long id, SucursalRequestDTO dto) {
                 return sucursalRepository.findById(id).map(sucursal -> {
-                        webClientUtil.validateMicroService(dto.getIdComuna(), "comuna");
+                        webClientUtil.validateMicroService(dto.getIdComuna(), "comunas", comunasWebClient);
                         sucursal.setNombre(dto.getNombre());
                         sucursal.setIdComuna(dto.getIdComuna());
                         sucursal.setDireccionFisica(dto.getDireccionFisica());
